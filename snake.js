@@ -76,6 +76,7 @@ function render() {
 
     setTimeout( render, 100 );
 }
+
 $( document ).keydown( function( e ) {
     switch ( e.keyCode ) {
         case 37:
