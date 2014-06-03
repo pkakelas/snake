@@ -6,7 +6,7 @@ var length = 10;
 var dir;
 
 function init() {
-    for ( var i = 0, x = 15; i < length; i++, x += 15 ) {
+    for ( var i = 0, x = 15; i <= length; i++, x += 15 ) {
         boxes.push( {
             w: 10,
             h: 10,
@@ -17,12 +17,22 @@ function init() {
     dir = 'right';
 }
 
-function walk()  {
-    for ( var i = 0; i < length; ++i ) {
+function integrate()  {
+    var dot;
+    for ( var i = 0; i < length; ++i ) { //movement
         boxes[ i ] = boxes[ i + 1 ];
-        newDot( dir );
+        dot = newDot( dir );
     }
     boxes.splice( 0, 1 );
+
+    for ( var i = 1; i < length; ++i ) { //restrictions
+        if ( dot.x == boxes[ i - 1 ].x && dot.y == boxes[ i - 1 ].y ) {
+            console.log( 'fuck' );
+        }
+    }
+    if ( dot.x > W || dot.x < 0 || dot.y > H || dot.y < 0 ) {
+        console.log( 'fuck' );
+    }
 }
 
 function newDot( dir ) {
@@ -44,7 +54,7 @@ function newDot( dir ) {
             x = boxes[ length - 1 ].x - 15;
             break;
     };
-    boxes[ length ] = {
+    return boxes[ length ] = {
         w: 10,
         h: 10,
         x: x,
@@ -53,7 +63,7 @@ function newDot( dir ) {
 }
 
 function render() {
-    walk();
+    integrate();
 
     ctx.fillStyle = '#fff';
     ctx.fillRect( 0, 0, W, H );
@@ -64,7 +74,7 @@ function render() {
         ctx.fillRect( box.x, box.y, box.w, box.h );
     }
 
-    setTimeout( render, 500 );
+    setTimeout( render, 100 );
 }
 $( document ).keydown( function( e ) {
     switch ( e.keyCode ) {
