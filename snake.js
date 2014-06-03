@@ -7,26 +7,49 @@ var dir;
 
 function init() {
     for ( var i = 0, x = 15; i < length; i++, x += 15 ) {
-        initSnake( i );
-        boxes[ i ].x = x;  
-        boxes[ i ].y = 10;
+        boxes.push( {
+            w: 10,
+            h: 10,
+            y: 10,
+            x: x
+        } );
     }
     dir = 'right';
 }
 
-function initSnake( i ) {
-    boxes[ i ] = {
-        w: 10,
-        h: 10,
-        x: 0,
-        y: 0
-    };
+function walk()  {
+    for ( var i = 0; i < length; ++i ) {
+        boxes[ i ] = boxes[ i + 1 ];
+        newDot( dir );
+    }
+    boxes.splice( 0, 1 );
 }
 
-function walk() {
-    box = boxes.shift();
-    box.x += length * 15;
-    box = boxes.push( box );
+function newDot( dir ) {
+    switch ( dir ) {
+        case 'up':
+            x = boxes[ length -1 ].x;
+            y = boxes[ length -1 ].y - 15;
+            break;
+        case 'down':
+            x = boxes[ length -1 ].x;
+            y = boxes[ length -1 ].y + 15;
+            break;
+        case 'right':
+            y = boxes[ length - 1 ].y;
+            x = boxes[ length - 1 ].x + 15;
+            break;
+        case 'left':
+            y = boxes[ length - 1 ].y;
+            x = boxes[ length - 1 ].x - 15;
+            break;
+    };
+    boxes[ length ] = {
+        w: 10,
+        h: 10,
+        x: x,
+        y: y
+    };
 }
 
 function render() {
@@ -43,22 +66,22 @@ function render() {
 
     setTimeout( render, 500 );
 }
- $( document ).keydown( function( e ) {
+$( document ).keydown( function( e ) {
     switch ( e.keyCode ) {
-        case 40:
-            console.log( 'left' );
-            break;
         case 37:
-            console.log( 'left' );
-            break;
-        case 39:
-            console.log( 'right' );
+            dir = 'left';
             break;
         case 38:
-            console.log( 'up' );
+            dir = 'up';
+            break;
+        case 39:
+            dir = 'right';
+            break;
+        case 40:
+            dir = 'down';
             break;
     }
- } ); 
+} ); 
 
 init();
 render();
