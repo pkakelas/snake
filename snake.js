@@ -1,18 +1,16 @@
 var c = document.getElementsByTagName( 'canvas' )[ 0 ];
 var ctx = c.getContext( '2d' );
 var W = 700, H = 700;
-var boxes = [];
-var length = 10;
+var STEP = 15;
+var dots = [];
+var length = 5;
 var dir;
+var apple;
 
 function init() {
-    for ( var i = 0, x = 15; i <= length; i++, x += 15 ) {
-        boxes.push( {
-            w: 10,
-            h: 10,
-            y: 10,
-            x: x
-        } );
+    for ( var i = 0, x = STEP; i <= length; i++, x += STEP ) {
+        createDot( i );
+        dots[ i ].x = x;
     }
     dir = 'right';
 }
@@ -20,46 +18,67 @@ function init() {
 function integrate()  {
     var dot;
     for ( var i = 0; i < length; ++i ) { //movement
-        boxes[ i ] = boxes[ i + 1 ];
+        dots[ i ] = dots[ i + 1 ];
         dot = newDot( dir );
     }
-    boxes.splice( 0, 1 );
 
     for ( var i = 1; i < length; ++i ) { //restrictions
-        if ( dot.x == boxes[ i - 1 ].x && dot.y == boxes[ i - 1 ].y ) {
+        if ( dot.x == dots[ i - 1 ].x && dot.y == dots[ i - 1 ].y ) {
             console.log( 'fuck' );
         }
     }
     if ( dot.x > W || dot.x < 0 || dot.y > H || dot.y < 0 ) {
         console.log( 'fuck' );
     }
+
+    console.log( apple );
+    if ( dot.x == apple.x && dot.y == apple.y ) {
+        createApple();
+        length += 1;
+    }
+}
+
+function createApple() {
+    return apple = {
+        w: 10,
+        h: 10,
+        x: Math.round( Math.random() * W / STEP ) * STEP,
+        y: Math.round( Math.random() * H / STEP ) * STEP - 5
+    };
+}
+
+function createDot( i ) {
+    return dots[ i ] = {
+        w: 10,
+        h: 10,
+        x: 10,
+        y: 10
+    };
 }
 
 function newDot( dir ) {
     switch ( dir ) {
         case 'up':
-            x = boxes[ length -1 ].x;
-            y = boxes[ length -1 ].y - 15;
+            x = dots[ length - 2 ].x;
+            y = dots[ length - 2 ].y - STEP;
             break;
         case 'down':
-            x = boxes[ length -1 ].x;
-            y = boxes[ length -1 ].y + 15;
+            x = dots[ length - 2 ].x;
+            y = dots[ length - 2 ].y + STEP;
             break;
         case 'right':
-            y = boxes[ length - 1 ].y;
-            x = boxes[ length - 1 ].x + 15;
+            y = dots[ length - 2 ].y;
+            x = dots[ length - 2 ].x + STEP;
             break;
         case 'left':
-            y = boxes[ length - 1 ].y;
-            x = boxes[ length - 1 ].x - 15;
+            y = dots[ length - 2 ].y;
+            x = dots[ length - 2 ].x - STEP;
             break;
     };
-    return boxes[ length ] = {
-        w: 10,
-        h: 10,
-        x: x,
-        y: y
-    };
+    dot = createDot( length );
+    dot.x = x;
+    dot.y = y;
+    return dot;
 }
 
 function render() {
@@ -69,29 +88,44 @@ function render() {
     ctx.fillRect( 0, 0, W, H );
 
     for ( var i = 0; i < length; ++i ) {
-        box = boxes[ i ];
+        dot = dots[ i ];
         ctx.fillStyle = 'black';
-        ctx.fillRect( box.x, box.y, box.w, box.h );
+        ctx.fillRect( dot.x, dot.y, dot.w, dot.h );
     }
 
-    setTimeout( render, 100 );
+    ctx.fillStyle = 'red';
+    image = new Image();
+    image.src = 'http://findicons.com/files/icons/496/smooth/128/apple.png';
+    ctx.drawImage( image, apple.x, apple.y, 15, 15 );
+
+    setTimeout( render, 200 );
 }
+
 $( document ).keydown( function( e ) {
     switch ( e.keyCode ) {
         case 37:
-            dir = 'left';
+            if ( dir != 'right' ) {
+                dir = 'left';
+            }
             break;
         case 38:
-            dir = 'up';
+            if ( dir != 'down' ) {
+                dir = 'up';
+            }
             break;
         case 39:
-            dir = 'right';
+            if ( dir != 'left' ) {
+                dir = 'right';
+            }
             break;
         case 40:
-            dir = 'down';
+            if ( dir != 'up' ) {
+                dir = 'down';
+            }
             break;
     }
 } ); 
 
+createApple();
 init();
 render();
