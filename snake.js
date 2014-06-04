@@ -6,6 +6,7 @@ var dots = [];
 var length = 5;
 var dir;
 var apple;
+var over = false;
 
 function init() {
     for ( var i = 0, x = STEP; i <= length; i++, x += STEP ) {
@@ -24,18 +25,22 @@ function integrate()  {
 
     for ( var i = 1; i < length; ++i ) { //restrictions
         if ( dot.x == dots[ i - 1 ].x && dot.y == dots[ i - 1 ].y ) {
-            console.log( 'fuck' );
+            gameOver();
         }
     }
     if ( dot.x > W || dot.x < 0 || dot.y > H || dot.y < 0 ) {
-        console.log( 'fuck' );
+        gameOver();
     }
 
-    console.log( apple );
     if ( dot.x == apple.x && dot.y == apple.y ) {
         createApple();
         length += 1;
     }
+}
+
+function gameOver() {
+    over = true;
+    newGame();
 }
 
 function createApple() {
@@ -43,7 +48,7 @@ function createApple() {
         w: 10,
         h: 10,
         x: Math.round( Math.random() * W / STEP ) * STEP,
-        y: Math.round( Math.random() * H / STEP ) * STEP - 5
+        y: Math.round( Math.random() * H / STEP ) * STEP
     };
 }
 
@@ -51,8 +56,8 @@ function createDot( i ) {
     return dots[ i ] = {
         w: 10,
         h: 10,
-        x: 10,
-        y: 10
+        x: STEP * 2,
+        y: STEP * 2
     };
 }
 
@@ -98,7 +103,9 @@ function render() {
     image.src = 'http://findicons.com/files/icons/496/smooth/128/apple.png';
     ctx.drawImage( image, apple.x, apple.y, 15, 15 );
 
-    setTimeout( render, 200 );
+    if ( over == false) {
+        setTimeout( render, 300 );  
+    }
 }
 
 $( document ).keydown( function( e ) {
@@ -126,6 +133,14 @@ $( document ).keydown( function( e ) {
     }
 } ); 
 
-createApple();
-init();
-render();
+function newGame() {
+    over = false;
+    dots = [];
+    length = 5;
+
+    createApple();
+    init();
+    render();
+}
+
+newGame();
